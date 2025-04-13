@@ -4,6 +4,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signup-form");
   const messageDiv = document.getElementById("message");
 
+  fetch('/activities')
+  .then(response => response.json())
+  .then(data => {
+    const activitiesList = document.getElementById('activities-list');
+    activitiesList.innerHTML = ''; // Clear loading message
+
+    Object.keys(data).forEach(activityName => {
+      const activity = data[activityName];
+
+      // Create activity card
+      const card = document.createElement('div');
+      card.classList.add('activity-card');
+
+      // Add activity details
+      card.innerHTML = `
+        <h4>${activityName}</h4>
+        <p>${activity.description}</p>
+        <p><strong>Schedule:</strong> ${activity.schedule}</p>
+        <p><strong>Max Participants:</strong> ${activity.max_participants}</p>
+        <p><strong>Participants:</strong></p>
+        <ul class="participants-list">
+          ${activity.participants.map(participant => `<li>${participant}</li>`).join('')}
+        </ul>
+      `;
+
+      activitiesList.appendChild(card);
+    });
+  })
+  .catch(error => {
+    console.error('Error fetching activities:', error);
+  });
+
   // Function to fetch activities from API
   async function fetchActivities() {
     try {
@@ -84,3 +116,4 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize app
   fetchActivities();
 });
+
